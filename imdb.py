@@ -13,7 +13,7 @@ class movieManager:
    
    genreListSelected = []
    
-   CURRENT_LIST_VIEW = 'list'
+   CURRENT_LIST_VIEW = 'icon'
    MOVIE_LIST_VIEW_LABEL = "list view";
    MOVIE_ICON_VIEW_LABEL = "icon view";
    
@@ -104,7 +104,10 @@ class movieManager:
    #Create the Movies iconView   
    def createMoviesListView(self, condition=""):
       DEFAULT_MOVIE_IMAGE = 'default_movie_photo.jpg'
-   
+      
+      #hide the list view movies
+      self.iconviewMovie = self.wTree.get_object("treeviewMovie").hide()
+      
       #Create the movieView
       self.iconviewMovie = self.wTree.get_object("iconviewMovie")
       self.liststoreMovie = gtk.ListStore(str, gtk.gdk.Pixbuf)
@@ -112,6 +115,7 @@ class movieManager:
       self.iconviewMovie.set_model(self.liststoreMovie)
       self.iconviewMovie.set_text_column(0)
       self.iconviewMovie.set_pixbuf_column(1)
+      self.iconviewMovie.show()
       
       imdbObj = Imdb()
       moviesModelData = imdbObj.getMoviesList(condition)
@@ -142,6 +146,10 @@ class movieManager:
 
    #Create the movie treeView   
    def createMoviesListTreeView(self, condition=""):
+     
+      #hide the icon view movies
+      self.iconviewMovie = self.wTree.get_object("iconviewMovie").hide()
+   
       self.treeviewMovie = self.wTree.get_object("treeviewMovie")
       #it create the gtk.TreeViewColumn and then set some needed properties
       
@@ -157,11 +165,14 @@ class movieManager:
       self.treeviewMovie.append_column(column)
 
       #Desc column      
-      column = gtk.TreeViewColumn('desc', gtk.CellRendererText(), text=2)   
+      cell = gtk.CellRendererText()
+      column = gtk.TreeViewColumn('desc', cell, text=2)   
+      column.add_attribute(cell, 'expand', False)
       column.set_clickable(True)   
-      column.set_resizable(True)   
+      column.set_resizable(True)         
       self.treeviewMovie.append_column(column)
       
+      self.treeviewMovie.show()
       
       self.listStoreMovie = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
       self.treeviewMovie.set_model(self.listStoreMovie) 
@@ -234,20 +245,8 @@ class movieManager:
       #tooltip advance
       #http://www.daa.com.au/pipermail/pygtk/2004-February/006954.html
 
-      #r1 = gtk.RadioButton(None, label='icon view')
-      #r2 = gtk.RadioButton(r1, label='list view') 
       
-      #active_radios = [r for r in r1.get_group() if r.get_active()]
-      #activeLabel = active_radios[0].get_label()
       
-      #for r in r1.get_group():
-      #   print r.get_label()
-      #   print r.get_active()
-      #
-      #active_radios = [r for r in r1.get_group() if r.get_active()][0] 
-      #activeLabel = active_radios.get_label() 
-      #print activeLabel
-      print self.CURRENT_LIST_VIEW
       if(self.CURRENT_LIST_VIEW == 'icon'):
          self.createMoviesListView(condition)
       elif(self.CURRENT_LIST_VIEW == 'list'):

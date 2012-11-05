@@ -472,6 +472,8 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="model">liststore2</property>
+                                    <property name="hover_selection">True</property>
+                                    <property name="enable_grid_lines">vertical</property>
                                     <child internal-child="selection">
                                       <object class="GtkTreeSelection" id="treeview-selection2"/>
                                     </child>
@@ -479,6 +481,7 @@
                                   <packing>
                                     <property name="expand">True</property>
                                     <property name="fill">True</property>
+                                    <property name="pack_type">end</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
