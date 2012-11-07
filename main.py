@@ -17,7 +17,6 @@ class movieManager:
    MOVIE_LIST_VIEW_LABEL = "list view";
    MOVIE_ICON_VIEW_LABEL = "icon view";
    
-   
    def __init__( self ):
       try:
          self.wTree = gtk.Builder()
@@ -166,8 +165,7 @@ class movieManager:
 
       #Desc column      
       cell = gtk.CellRendererText()
-      column = gtk.TreeViewColumn('desc', cell, text=2)   
-      column.add_attribute(cell, 'expand', False)
+      column = gtk.TreeViewColumn('desc', cell, text=2)
       column.set_clickable(True)   
       column.set_resizable(True)         
       self.treeviewMovie.append_column(column)
@@ -272,6 +270,10 @@ class movieManager:
 class Imdb:
    """This class represents all the wine information"""
    
+   #cache data
+   CACHE_GENRE_DATA          = [];
+   CACHE_MOVIE_DATA = [];
+   
    def __init__(self):
       self.genreList = []
       self.moviesList = []
@@ -286,6 +288,7 @@ class Imdb:
       """This function returns a list of Movie Genre list"""
       allGenreList = []
       con = self.getDbconn()
+      
       with con:    
          cur = con.cursor()    
          cur.execute("SELECT genres FROM movie_list")
@@ -321,16 +324,22 @@ class Imdb:
    def getMoviesList(self, condition=""):
       """This function returns a list of Movies"""
       
-      con = self.getDbconn()  
-      with con:    
-         cur = con.cursor()
-         sqlText = "SELECT * FROM movie_list "+condition
-         cur.execute(sqlText)
-         self.moviesList = cur.fetchall()        
-      
-         #print sqlText 
+      if len(self.CACHE_MOVIE_DATA) > 0:
+         return self.CACHE_MOVIE_DATA
+      else:      
+         con = self.getDbconn()  
+         with con:    
+            cur = con.cursor()
+            sqlText = "SELECT * FROM movie_list "+condition
+            cur.execute(sqlText)
+            self.moviesList = cur.fetchall()
          
-      return self.moviesList      
+            #set cache data
+            self.CACHE_MOVIE_DATA = self.moviesList
+            
+         return self.moviesList
+      
+         
       
 #create application 
 if __name__ == "__main__":
