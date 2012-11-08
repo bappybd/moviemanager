@@ -98,6 +98,22 @@ class movieManager:
         genreDesc  = row[0]+" ("+str(row[1])+")"
         
         self.genreList.append([genreName, genreDesc])
+   
+   #Genre slected function
+   def genreClickEvent(self, treeselection):
+      genreList = []
+   
+      (model,pathlist) = treeselection.get_selected_rows()
+      for path in pathlist :
+          tree_iter = model.get_iter(path)
+          genreValue = model.get_value(tree_iter,0)
+      
+          genreList.append(genreValue)
+
+      self.genreListSelected = genreList
+
+      #call the movie search
+      self.search_callback(self)
         
       
    #Create the Movies iconView   
@@ -115,6 +131,13 @@ class movieManager:
       self.iconviewMovie.set_text_column(0)
       self.iconviewMovie.set_pixbuf_column(1)
       self.iconviewMovie.show()
+      
+      #register bottom movie details view event
+      self.iconviewMovie.set_selection_mode(gtk.SELECTION_SINGLE)
+      #self.iconviewMovie.connect('button-press-event', self.showMoveDtailsView)
+      self.iconviewMovie.connect('selection-changed', self.showMoveDtailsView)
+      self.iconviewMovie.connect('item-activated', self.showMoveDtailsView)
+      
       
       imdbObj = Imdb()
       moviesModelData = imdbObj.getMoviesList(condition)
@@ -142,6 +165,20 @@ class movieManager:
          except glib.GError:
              print "image not found:"
    
+   def showMoveDtailsView(self, widget):
+      path = widget.get_selected_items()
+      
+      print widget.select_path(path)
+      
+      ##if right click activate a pop-up menu
+      #if event.button == 3 :
+      #   self.popup.popup(None, None, None, None, event.button, event.time)
+      ##if left click, activate the item to execute
+      #if event.button == 1 :
+      #   #self.iv_icon_activated(widget, path)
+      #   self.popup.popup(None, None, None, None, event.button, event.time)
+   
+      
 
    #Create the movie treeView   
    def createMoviesListTreeView(self, condition=""):
@@ -201,20 +238,8 @@ class movieManager:
          self.listStoreMovie.append((pixbuf, movieName, movieImageId))
 
    
-   def genreClickEvent(self, treeselection):
-      genreList = []
    
-      (model,pathlist) = treeselection.get_selected_rows()
-      for path in pathlist :
-          tree_iter = model.get_iter(path)
-          genreValue = model.get_value(tree_iter,0)
-      
-          genreList.append(genreValue)
-
-      self.genreListSelected = genreList
-
-      #call the movie search
-      self.search_callback(self)
+   
           
    def search_callback(self, widget):
       condition  =  " WHERE 1 "
